@@ -3,7 +3,7 @@ const response = (res, statusCode, message, data = null) => {
     console.error("Response object is null");
     return;
   }
-  const responseObject = {
+  const responseObject = {     
     status: statusCode < 400 ? "success" : "error",
     message,
     data,
