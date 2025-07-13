@@ -1,6 +1,8 @@
 const otpGenerate = require("../utils/otpGenerater");
 const User = require("../models/user.model");
 const response = require("../utils/responseHandler");
+const sendOtpToEmail = require("../services/emailService");
+const twilioService = require("../services/twilioService");
 
 // Step - 1  -> sendOTP
 
@@ -19,6 +21,7 @@ const sendOtp = async (req, res) => {
       user.emailOtp = otp;
       user.expiry = expiry;
       await user.save();
+      await sendOtpToEmail(email, otp);
       return response(res, 200, "OTP send to your email", { email });
     }
     if (!phoneNumber || !phoneSuffix) {
@@ -33,6 +36,7 @@ const sendOtp = async (req, res) => {
     if (!user) {
       user = await new User({ phoneNumber, phoneSuffix });
     }
+    await twilioService.sendOtpToPhoneNumber(fullPhoneNumber);
     await user.save();
 
     return response(res, 200, "OTP send successfully", user);
@@ -40,4 +44,20 @@ const sendOtp = async (req, res) => {
     console.error(error);
     return response(res, 500, "Internal server error");
   }
+};
+
+//Step -2 Verify OTP
+
+const verifyOtp = async (req, res) => {
+  const { phoneNumber, phoneSuffix, email, otp } = req.body;
+  try {
+    let user;
+    if (email) {
+      user = await User.findOne({ email });
+      if (!user) {
+        return response(res, 404, "User not found");
+      }
+      
+    }
+  } catch (error) {}
 };
