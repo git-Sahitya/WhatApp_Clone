@@ -15,7 +15,7 @@ const sendOtp = async (req, res) => {
     if (email) {
       user = await User.findOne({ email });
 
-      if (!email) {
+      if (!user) {
         user = new User({ email });
       }
       user.emailOtp = otp;
